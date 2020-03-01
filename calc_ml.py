@@ -16,6 +16,8 @@ from keras.optimizers import Adam
 from keras.layers import Dense
 
 import gen_partition as gen
+#import gen_distribution as gen
+#import gen_kdf as gen
 
 def get_file():
     '''
@@ -45,8 +47,9 @@ def get_file():
     #uncomment to use kernel desnity to generate points
     #genx, geny = gen.generator(xs, ys, len(xs))
 
+    print("\nSlope: %.5f\nIntercept: %.5f"%(slope, intercept))
     write_gen(filename, genx, geny)
-    write_file(filename, slope, intercept)
+    time.sleep(5)
 
 def get_points(file):
     '''
@@ -92,6 +95,7 @@ def make_train_model(xs, ys):
 
     model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(0.1))
 
+    #loss function
     model.fit(xs, ys, epochs=10, verbose=2, steps_per_epoch = int(xs.size/2))
 
     slope, intercept = model.get_weights()
@@ -135,21 +139,6 @@ def write_gen(filename, xs, ys):
         for i in range(len(xs)):
             slopeWrite.writerow(['%f'%xs[i], '%f'%ys[i]])
     print("Generated points located in %s"%outFileName)
-
-def write_file(filename, slope, intercept):
-    '''
-    Writes out the filename, slope, and intercept in a csv file.
-    Args:
-        filename (str) : the name of the input file.
-        slope (float) : the slope of the line of best fit.
-        intercept (float) : the intercept of the line of best fit.
-    '''
-    with open('output.csv', 'w', newline = '') as slopeOut:
-        slopeWrite = csv.writer(slopeOut)
-        slopeWrite.writerow(['Filename', 'Slope', 'Intercept'])
-        slopeWrite.writerow([filename, '%f'%slope, '%f'%intercept])
-    print("Output located in output.csv")
-    time.sleep(10)
 
 if __name__ == '__main__':
     get_file()
